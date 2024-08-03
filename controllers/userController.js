@@ -1,8 +1,13 @@
 const { google } = require('googleapis');
-const multer = require('multer');
+// const multer = require('multer');
+const { Readable } = require('stream');
 const fs = require('fs');
 const { Cnc, Laser, Printing } = require('../models/peminjamanModel');
 const SCOPE = ['https://www.googleapis.com/auth/drive'];
+
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 const oauth2Client = new google.auth.JWT(
     process.env.client_email,
@@ -13,17 +18,26 @@ const oauth2Client = new google.auth.JWT(
 
 const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
-const uploadFileToDrive = async (filePath, fileName) => {
+function bufferToStream(buffer) {
+    const stream = new Readable();
+    stream.push(buffer);
+    stream.push(null);
+    return stream;
+}
+
+const uploadFileToDrive = async (fileBuffer, fileName) => {
     try {
+        const fileStream = bufferToStream(fileBuffer);  // Konversi buffer ke stream
+
         const response = await drive.files.create({
             requestBody: {
                 name: fileName,
                 mimeType: 'application/octet-stream',
-                parents:['1qIuyp30TAd2ALalYosfn9qv2DBcK9fiZ'] 
+                parents: ['1qIuyp30TAd2ALalYosfn9qv2DBcK9fiZ'] 
             },
             media: {
                 mimeType: 'application/octet-stream',
-                body: fs.createReadStream(filePath),
+                body: fileStream,  // Gunakan stream di sini
             },
         });
 
@@ -48,16 +62,16 @@ const uploadFileToDrive = async (filePath, fileName) => {
 };
 
 // Konfigurasi multer untuk menangani upload file
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname);
-    },
-});
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, 'uploads/');
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, file.originalname);
+//     },
+// });
 
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
 const getModelAndMesinName = (type) => {
     switch(type) {
@@ -86,20 +100,20 @@ const peminjamanHandler = async (req, res) => {
             message: "Detail keperluan wajib diisi"
         });
     }
-    if (!email || !nama_pemohon || !tanggal_peminjaman || !awal_peminjaman || !akhir_peminjaman || !jumlah || !program_studi || !kategori || !req.file) {
-        return res.status(400).json({
-            success: false,
-            statusCode: res.statusCode,
-            message: "Please complete input data"
-        });
-    }
+    // if (!email || !nama_pemohon || !tanggal_peminjaman || !awal_peminjaman || !akhir_peminjaman || !jumlah || !program_studi || !kategori || !req.file) {
+    //     return res.status(400).json({
+    //         success: false,
+    //         statusCode: res.statusCode,
+    //         message: "Please complete input data"
+    //     });
+    // }
 
     try {
-        const filePath = req.file.path;
-        const fileName = req.file.filename;
+        // const filePath = req.file.path;
+        // const fileName = req.file.filename;
 
-        const fileLink = await uploadFileToDrive(filePath, fileName);
-        fs.unlinkSync(filePath);
+        const fileLink = await uploadFileToDrive(req.file.buffer, req.file.originalname);
+
 
         const peminjamanEntry = await Model.create({
             nama_mesin: mesinName,
