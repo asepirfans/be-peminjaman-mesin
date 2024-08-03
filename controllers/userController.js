@@ -2,15 +2,12 @@ const { google } = require('googleapis');
 const multer = require('multer');
 const fs = require('fs');
 const { Cnc, Laser, Printing } = require('../models/peminjamanModel');
-const apikeys = require('../apikey.json');
 const SCOPE = ['https://www.googleapis.com/auth/drive'];
 
 const oauth2Client = new google.auth.JWT(
     process.env.client_email,
-    // apikeys.client_email,
     null,
     process.env.private_key,
-    // apikeys.private_key,
     SCOPE
 );
 
