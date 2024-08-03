@@ -12,7 +12,7 @@ const upload = multer({ storage });
 const oauth2Client = new google.auth.JWT(
     process.env.client_email,
     null,
-    process.env.private_key,
+    process.env.private_key.replace(/\\n/g, '\n'),
     SCOPE
 );
 
