@@ -1,7 +1,5 @@
 const { google } = require('googleapis');
-// const multer = require('multer');
 const { Readable } = require('stream');
-const fs = require('fs');
 const { Cnc, Laser, Printing } = require('../models/peminjamanModel');
 const SCOPE = ['https://www.googleapis.com/auth/drive'];
 
@@ -61,18 +59,6 @@ const uploadFileToDrive = async (fileBuffer, fileName) => {
     }
 };
 
-// Konfigurasi multer untuk menangani upload file
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, 'uploads/');
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, file.originalname);
-//     },
-// });
-
-// const upload = multer({ storage });
-
 const getModelAndMesinName = (type) => {
     switch(type) {
         case 'cnc':
@@ -109,10 +95,7 @@ const peminjamanHandler = async (req, res) => {
     // }
 
     try {
-        // const filePath = req.file.path;
-        // const fileName = req.file.filename;
-
-        const fileLink = await uploadFileToDrive(req.file.buffer, req.file.originalname);
+        // const fileLink = await uploadFileToDrive(req.file.buffer, req.file.originalname);
 
 
         const peminjamanEntry = await Model.create({
@@ -126,13 +109,14 @@ const peminjamanHandler = async (req, res) => {
             detail_keperluan,
             program_studi,
             kategori,
-            desain_benda: fileLink,
+            // desain_benda: fileLink,
             status: 'Menunggu',
             user: userId
         });
 
-        res.status(200).json({
+        res.status(201).json({
             success: true,
+            statusCode: res.statusCode,
             message: "Uploaded!",
             data: {
                 nama_mesin: peminjamanEntry.nama_mesin,
@@ -145,7 +129,7 @@ const peminjamanHandler = async (req, res) => {
                 detail_keperluan,
                 program_studi,
                 kategori,
-                desain_benda: fileLink,
+                // desain_benda: fileLink,
                 status: peminjamanEntry.status,
                 waktu: peminjamanEntry.waktu,
                 user: userName

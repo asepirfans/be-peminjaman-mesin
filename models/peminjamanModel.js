@@ -7,15 +7,15 @@ const peminjamanSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true
+        // required: true
     },
     nama_pemohon: {
         type: String,
-        required: true
+        // required: true
     },
     tanggal_peminjaman: {
         type: Date,
-        required: true,
+        // required: true,
         get: (value) => {
             if (!value) return null;
             return value.toLocaleDateString('en-GB', {
@@ -28,7 +28,7 @@ const peminjamanSchema = new mongoose.Schema({
     },
     awal_peminjaman: {
         type: Date,
-        required: true,
+        // required: true,
         get: (value) => value ? value.toLocaleTimeString('en-GB', { hour12: true, timeZone: 'Asia/Jakarta' }) : null,
         set: (value) => {
             // Convert the input like "1:00 PM" to a Date object
@@ -50,7 +50,7 @@ const peminjamanSchema = new mongoose.Schema({
     },
     akhir_peminjaman: {
         type: Date,
-        required: true,
+        // required: true,
         get: (value) => value ? value.toLocaleTimeString('en-GB', { hour12: true, timeZone: 'Asia/Jakarta' }) : null,
         set: (value) => {
             // Convert the input like "1:00 PM" to a Date object
@@ -76,18 +76,18 @@ const peminjamanSchema = new mongoose.Schema({
     },
     program_studi: {
         type: String,
-        required: true
+        // required: true
     },
     kategori: {
         type: String,
-        required: true
+        // required: true
     },
     detail_keperluan: {
         type: String,
     },    
     desain_benda: {
         type: String,
-        required: true
+        // required: true
     },
     status: {
         type: String,
