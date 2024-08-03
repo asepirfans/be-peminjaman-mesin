@@ -6,9 +6,11 @@ const apikeys = require('../apikey.json');
 const SCOPE = ['https://www.googleapis.com/auth/drive'];
 
 const oauth2Client = new google.auth.JWT(
-    apikeys.client_email,
+    process.env.client_email,
+    // apikeys.client_email,
     null,
-    apikeys.private_key,
+    process.env.private_key,
+    // apikeys.private_key,
     SCOPE
 );
 
